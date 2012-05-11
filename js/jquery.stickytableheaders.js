@@ -1,4 +1,4 @@
-/*! Copyright (c) 2011 by Jonas Mosbech - https://github.com/jmosbech/StickyTableHeaders 
+/*! Copyright (c) 2011 by Jonas Mosbech - https://github.com/jmosbech/StickyTableHeaders
     MIT license info: https://github.com/jmosbech/StickyTableHeaders/blob/master/license.txt */
 
 (function ($) {
@@ -42,7 +42,7 @@
 				});
 
 				base.$originalHeader.addClass('tableFloatingHeaderOriginal');
-				
+
 				base.$originalHeader.after(base.$clonedHeader);
 
 				// enabling support for jquery.tablesorter plugin
@@ -70,14 +70,29 @@
 				var scrollLeft = base.$window.scrollLeft();
 
 				if ((scrollTop > offset.top) && (scrollTop < offset.top + $this.height())) {
-					base.$clonedHeader.css({
-						'top': fixedHeaderHeight,
-						'margin-top': 0,
-						'left': offset.left - scrollLeft,
-						'display': 'block'
-					});
+					if($.browser.msie && $.browser.version <= 7) {
+						var tops = $("tr", base.$originalHeader).map(function() {
+							return $(this).position().top;
+						});
 
-					base.updateCloneFromOriginal();
+						$("tr", base.$clonedHeader).each(function(index) {
+							$(this).css({
+								"position": "absolute",
+								"top": scrollTop + (tops[index] - tops[0])
+							});
+						});
+
+						base.$clonedHeader.show();
+					} else {
+						base.$clonedHeader.css({
+							'top': fixedHeaderHeight,
+							'margin-top': 0,
+							'left': offset.left - scrollLeft,
+							'display': 'block'
+						});
+
+						base.updateCloneFromOriginal();
+					}
 				}
 				else {
 					base.$clonedHeader.css('display', 'none');
