@@ -55,8 +55,21 @@
 			});
 
 			base.updateTableHeaders();
-			base.$window.scroll(base.updateTableHeaders);
-			base.$window.resize(base.updateTableHeaders);
+
+			if($.browser.msie && $.browser.version <= 7) {
+				base.$window.scroll(function() {
+					clearTimeout(base.$originalHeader.data("timer"));
+					base.$originalHeader.data("timer", setTimeout(base.updateTableHeaders, 200));
+				});
+
+				base.$window.resize(function() {
+					clearTimeout(base.$originalHeader.data("timer"));
+					base.$originalHeader.data("timer", setTimeout(base.updateTableHeaders, 200));
+				});
+			} else {
+				base.$window.scroll(base.updateTableHeaders);
+				base.$window.resize(base.updateTableHeaders);
+			}
 		};
 
 		base.updateTableHeaders = function () {
@@ -87,15 +100,14 @@
 						base.$clonedHeader.css({
 							'top': fixedHeaderHeight,
 							'margin-top': 0,
-							'left': offset.left - scrollLeft,
-							'display': 'block'
-						});
+							'left': offset.left - scrollLeft
+						}).fadeIn(base.options.fadeDuration);
 
 						base.updateCloneFromOriginal();
 					}
 				}
 				else {
-					base.$clonedHeader.css('display', 'none');
+					base.$clonedHeader.fadeOut(base.options.fadeDuration);
 				}
 			});
 		};
@@ -118,7 +130,8 @@
 	};
 
 	$.StickyTableHeaders.defaultOptions = {
-		fixedOffset: 0
+		fixedOffset: 0,
+		fadeDuration: 100
 	};
 
 	$.fn.stickyTableHeaders = function (options) {
