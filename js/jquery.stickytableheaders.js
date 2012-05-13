@@ -59,12 +59,12 @@
 			if($.browser.msie && $.browser.version <= 7) {
 				base.$window.scroll(function() {
 					clearTimeout(base.$originalHeader.data("timer"));
-					base.$originalHeader.data("timer", setTimeout(base.updateTableHeaders, 200));
+					base.$originalHeader.data("timer", setTimeout(base.updateTableHeaders, base.options.oldIeUpdateDelay));
 				});
 
 				base.$window.resize(function() {
 					clearTimeout(base.$originalHeader.data("timer"));
-					base.$originalHeader.data("timer", setTimeout(base.updateTableHeaders, 200));
+					base.$originalHeader.data("timer", setTimeout(base.updateTableHeaders, base.options.oldIeUpdateDelay));
 				});
 			} else {
 				base.$window.scroll(base.updateTableHeaders);
@@ -131,7 +131,8 @@
 
 	$.StickyTableHeaders.defaultOptions = {
 		fixedOffset: 0,
-		fadeDuration: 100
+		fadeDuration: 100,
+		oldIeUpdateDelay: 200
 	};
 
 	$.fn.stickyTableHeaders = function (options) {
