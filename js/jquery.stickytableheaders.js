@@ -45,13 +45,24 @@
 
 				base.$originalHeader.after(base.$clonedHeader);
 
-				// enabling support for jquery.tablesorter plugin
-				// forward clicks on clone to original
-				$('th', base.$clonedHeader).click(function(e){
-					var index = $('th', base.$clonedHeader).index(this);
-					$('th', base.$originalHeader).eq(index).click();
+				$(base.$clonedHeader).on('click mouseover', function(event) {
+					var indices = [];
+					var el = $(event.target);
+
+					while (el[0] !== base.$clonedHeader[0]) {
+						indices.push(el.parent().children().index(el));
+						el = el.parent();
+					}
+
+					el = base.$originalHeader;
+
+					for (var i = indices.length - 1; i >= 0; i--) {
+						el = el.children().eq(indices[i]);
+					}
+
+					el.trigger(event);
+					setTimeout(base.updateCloneFromOriginal, 0);
 				});
-				$this.bind('sortEnd', base.updateCloneFromOriginal );
 			});
 
 			base.updateTableHeaders();
