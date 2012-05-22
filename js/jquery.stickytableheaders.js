@@ -34,24 +34,22 @@
 				base.$clonedHeader = base.$originalHeader.clone();
 
 				base.$clonedHeader.addClass('tableFloatingHeader');
-				base.$clonedHeader.css({
-					'position': 'fixed',
-					'top': 0,
-					'left': $this.css('margin-left'),
-					'display': 'none'
-				});
 
 				base.$originalHeader.addClass('tableFloatingHeaderOriginal');
 
 				base.$originalHeader.after(base.$clonedHeader);
 
+				base.$clonedHeader.css("visibility", "hidden");
+
 				// enabling support for jquery.tablesorter plugin
 				// forward clicks on clone to original
-				$('th', base.$clonedHeader).click(function(e){
+				/*$('th', base.$clonedHeader).click(function(e){
 					var index = $('th', base.$clonedHeader).index(this);
 					$('th', base.$originalHeader).eq(index).click();
 				});
-				$this.bind('sortEnd', base.updateCloneFromOriginal );
+				$this.bind('sortEnd', base.updateCloneFromOriginal );*/
+
+
 			});
 
 			base.updateTableHeaders();
@@ -67,8 +65,10 @@
 					base.$originalHeader.data("timer", setTimeout(base.updateTableHeaders, base.options.oldIeUpdateDelay));
 				});
 			} else {
-				base.$window.scroll(base.updateTableHeaders);
+				base.$window.scroll(base.updateTableHeaders);  // doesn't always have to update it on scroll??
 				base.$window.resize(base.updateTableHeaders);
+
+				base.$originalHeader.change(function() {alert(1);});
 			}
 		};
 
@@ -82,8 +82,9 @@
 				var scrollTop = base.$window.scrollTop() + fixedHeaderHeight;
 				var scrollLeft = base.$window.scrollLeft();
 
+				// show fixed header (TODO: break out into function)
 				if ((scrollTop > offset.top) && (scrollTop < offset.top + $this.height())) {
-					if($.browser.msie && $.browser.version <= 7) {
+					if ($.browser.msie && $.browser.version <= 7) {
 						var tops = $("tr", base.$originalHeader).map(function() {
 							return $(this).position().top;
 						});
@@ -97,32 +98,40 @@
 
 						base.$clonedHeader.show();
 					} else {
-						base.$clonedHeader.css({
+						base.$originalHeader.css({
+							'position': 'fixed',
+							'top': 0,
+							//'left': $this.css('margin-left')
+						});
+
+						base.$originalHeader.css({
 							'top': fixedHeaderHeight,
 							'margin-top': 0,
 							'left': offset.left - scrollLeft
 						}).fadeIn(base.options.fadeDuration);
 
+						base.$clonedHeader.css("visibility", "hidden");
+
 						base.updateCloneFromOriginal();
 					}
-				}
-				else {
-					base.$clonedHeader.fadeOut(base.options.fadeDuration);
+				} else {   // hide fixed header
+					//base.$clonedHeader.fadeOut(base.options.fadeDuration);
+					base.$originalHeader.css({"position": "inherit"});
 				}
 			});
 		};
 
 		base.updateCloneFromOriginal = function () {
 			// Copy cell widths and classes from original header
-			$('th', base.$clonedHeader).each(function (index) {
+			$('th', base.$originalHeader).each(function (index) {
 				var $this = $(this);
-				var origCell = $('th', base.$originalHeader).eq(index);
+				var origCell = $('th', base.$clonedHeader).eq(index);
 				$this.removeClass().addClass(origCell.attr('class'));
 				$this.css('width', origCell.width());
 			});
 
 			// Copy row width from whole table
-			base.$clonedHeader.css('width', base.$originalHeader.width());
+			base.$originalHeader.css('width', base.$clonedHeader.width());
 		};
 
 		// Run initializer

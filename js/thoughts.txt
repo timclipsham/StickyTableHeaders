@@ -1,0 +1,26 @@
+# Normal view
+
+original
+cloned (hidden)
+--table rows--
+
+# Fixed header view
+
+cloned (hidden)
+--table rows--
+original (floating)
+
+
+need to check regularly to ensure width remains same...
+
+
+el.style.cssText looks like the secret for copying those values???
+
+
+ - store a copy of the originalheader html
+ - compare on interval
+    update clone if different
+
+ ? I don't think this will work well because some of original's style attributes are always changing.
+
+I think we need timer anyway... what is JS updates the table with content... the header should reflect that change which means we'll probably need to poll anyway. Is there an event that fires when an element's content changes?? I dobut it but check it out anyway
